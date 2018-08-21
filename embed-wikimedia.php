@@ -9,7 +9,7 @@
  * @wordpress-plugin
  * Plugin Name:       Embed Wikimedia
  * Plugin URI:
- * Description:       Embed photos from a whitelist of Piwigo websites.
+ * Description:       Embed links to Wikimedia projects such as Wikipedia.
  * Version:           0.1.0
  * Author:            Sam Wilson
  * Author URI:        https://samwilson.id.au
@@ -67,7 +67,7 @@ function embed_wikimedia_get_data( $url ) {
 	$response = wp_remote_get( $url );
 	if ( $response instanceof WP_Error ) {
 		// translators: error message displayed when no response could be got from an API call.
-		$msg = __( 'Unable to retrieve URL: %s', 'embed-piwigo' );
+		$msg = __( 'Unable to retrieve URL: %s', 'embed-wikimedia' );
 		throw new Exception( sprintf( $msg, $url ) );
 	} else {
 		$info = json_decode( $response['body'], true );
