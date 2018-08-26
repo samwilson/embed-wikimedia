@@ -24,31 +24,53 @@ if ( ! defined( 'WPINC' ) ) {
 	exit(1);
 }
 
-wp_embed_register_handler( 'wikipedia', "|https?://([a-z]+\.wikipedia\.org)/wiki/(.*)|i",
-	function ( $matches, $attr, $url, $rawattr ) {
-		$base_url      = $matches[1];
-		$article_title = $matches[2];
-		$rest_url      = sprintf( 'https://%s/api/rest_v1/page/summary/%s', $base_url, $article_title );
-		$info          = embed_wikimedia_get_data( $rest_url );
-		$img           = '';
-		if (isset($info['thumbnail'])) {
-			$img = sprintf(
-				'<a href="%1$s"><img src="%2$s" alt="%3$s" width="%4$s" height="%5$s" /></a>',
-				$url,
-				$info['thumbnail']['source'],
-				$info['description'],
-				$info['thumbnail']['width'],
-				$info['thumbnail']['height']
-			);
-		}
-		$out = '<blockquote class="embed-wikimedia">'
-			. '<a href="' . $url . '"><strong>' . $info['displaytitle'] . '</strong></a>'
-			. $img
-			. $info['extract_html']
-			. '</blockquote>';
-		return $out;
+wp_embed_register_handler( 'wikipedia', "|https?://([a-z]+\.wikipedia\.org)/wiki/(.*)|i", 'embed_wikimedia_wikipedia' );
+wp_embed_register_handler( 'wikimedia_commons', "|https?://commons\.wikimedia\.org/wiki/(.*)|i", 'embed_wikimedia_commons' );
+
+function embed_wikimedia_wikipedia( $matches, $attr, $url, $rawattr ) {
+	$base_url      = $matches[1];
+	$article_title = $matches[2];
+	$rest_url      = sprintf( 'https://%s/api/rest_v1/page/summary/%s', $base_url, $article_title );
+	$info          = embed_wikimedia_get_data( $rest_url );
+	$img           = '';
+	if (isset($info['thumbnail'])) {
+		$img = sprintf(
+			'<a href="%1$s"><img src="%2$s" alt="%3$s" width="%4$s" height="%5$s" /></a>',
+			$url,
+			$info['thumbnail']['source'],
+			$info['description'],
+			$info['thumbnail']['width'],
+			$info['thumbnail']['height']
+		);
 	}
-);
+	$out = '<blockquote class="embed-wikimedia">'
+		. '<a href="' . $url . '"><strong>' . $info['displaytitle'] . '</strong></a>'
+		. $img
+		. $info['extract_html']
+		. '</blockquote>';
+	return $out;
+}
+
+function embed_wikimedia_commons( $matches, $attr, $url, $rawattr ) {
+	$article_title = $matches[1];
+	$rest_url      = sprintf( 'https://tools.wmflabs.org/magnus-toolserver/commonsapi.php?image=%s&thumbwidth=%s', $article_title, $attr['width'] );
+	$info          = embed_wikimedia_get_data( $rest_url, 'xml' );
+	$link_format   = '<a href="%s"><img src="%s" alt="%s" /></a>';
+	$img_link      = sprintf( $link_format, $url, $info['file']['urls']['thumbnail'], $info['file']['name'] );
+	$caption       = sprintf( '%1$s (%2$s) by %3$s, %4$s. %5$s',
+		$info['file']['title'],
+		$info['file']['date'],
+		$info['file']['author'],
+		$info['licenses']['license']['name'],
+		$info['description']['language']
+	);
+	$caption_attrs = [
+		'caption' => $caption,
+		'width'   => $attr['width'],
+		'align'   => 'aligncenter',
+	];
+	return img_caption_shortcode( $caption_attrs, $img_link );
+}
 
 /**
  * Get the JSON data from an API call, caching for an hour if we're not in debug mode.
@@ -58,7 +80,7 @@ wp_embed_register_handler( 'wikipedia', "|https?://([a-z]+\.wikipedia\.org)/wiki
  * @return mixed
  * @throws Exception
  */
-function embed_wikimedia_get_data( $url ) {
+function embed_wikimedia_get_data( $url, $response_format = 'json' ) {
 	$transient_name = 'embed_wikimedia_url_' . md5( $url );
 	$cached         = get_transient( $transient_name );
 	if ( $cached && ! WP_DEBUG ) {
@@ -69,9 +91,10 @@ function embed_wikimedia_get_data( $url ) {
 		// translators: error message displayed when no response could be got from an API call.
 		$msg = __( 'Unable to retrieve URL: %s', 'embed-wikimedia' );
 		throw new Exception( sprintf( $msg, $url ) );
-	} else {
-		$info = json_decode( $response['body'], true );
-		set_transient( $transient_name, $info, 60 * 60 );
-		return $info;
 	}
+	$info = ( $response_format === 'xml' )
+		? json_decode( json_encode( new SimpleXMLElement( $response['body'] ) ), true )
+		: json_decode( $response['body'], true );
+	set_transient( $transient_name, $info, 60 * 60 );
+	return $info;
 }
