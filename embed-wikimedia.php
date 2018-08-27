@@ -21,19 +21,29 @@
 
 // If this file is called directly, abort.
 if ( ! defined( 'WPINC' ) ) {
-	exit(1);
+	exit( 1 );
 }
 
-wp_embed_register_handler( 'wikipedia', "|https?://([a-z]+\.wikipedia\.org)/wiki/(.*)|i", 'embed_wikimedia_wikipedia' );
-wp_embed_register_handler( 'wikimedia_commons', "|https?://commons\.wikimedia\.org/wiki/(.*)|i", 'embed_wikimedia_commons' );
+wp_embed_register_handler( 'wikipedia', '|https?://([a-z]+\.wikipedia\.org)/wiki/(.*)|i', 'embed_wikimedia_wikipedia' );
+wp_embed_register_handler( 'wikimedia_commons', '|https?://commons\.wikimedia\.org/wiki/(.*)|i', 'embed_wikimedia_commons' );
 
+/**
+ * Embed handler for Wikipedia URLs.
+ *
+ * @param string[] $matches Regex matches from the handler definition.
+ * @param array    $attr Desired attributes of the returned image (can be ignored).
+ * @param string   $url The requested URL.
+ * @param string[] $rawattr The same as $attr but without argument parsing.
+ *
+ * @return string The HTML to embed.
+ */
 function embed_wikimedia_wikipedia( $matches, $attr, $url, $rawattr ) {
 	$base_url      = $matches[1];
 	$article_title = $matches[2];
 	$rest_url      = sprintf( 'https://%s/api/rest_v1/page/summary/%s', $base_url, $article_title );
 	$info          = embed_wikimedia_get_data( $rest_url );
 	$img           = '';
-	if (isset($info['thumbnail'])) {
+	if ( isset( $info['thumbnail'] ) ) {
 		$img = sprintf(
 			'<a href="%1$s"><img src="%2$s" alt="%3$s" width="%4$s" height="%5$s" /></a>',
 			$url,
@@ -51,13 +61,24 @@ function embed_wikimedia_wikipedia( $matches, $attr, $url, $rawattr ) {
 	return $out;
 }
 
+/**
+ * Embed handler for Wikidata URLs.
+ *
+ * @param string[] $matches Regex matches from the handler definition.
+ * @param array    $attr Desired attributes of the returned image (can be ignored).
+ * @param string   $url The requested URL.
+ * @param string[] $rawattr The same as $attr but without argument parsing.
+ *
+ * @return string The HTML to embed.
+ */
 function embed_wikimedia_commons( $matches, $attr, $url, $rawattr ) {
 	$article_title = $matches[1];
 	$rest_url      = sprintf( 'https://tools.wmflabs.org/magnus-toolserver/commonsapi.php?image=%s&thumbwidth=%s', $article_title, $attr['width'] );
 	$info          = embed_wikimedia_get_data( $rest_url, 'xml' );
 	$link_format   = '<a href="%s"><img src="%s" alt="%s" /></a>';
 	$img_link      = sprintf( $link_format, $url, $info['file']['urls']['thumbnail'], $info['file']['name'] );
-	$caption       = sprintf( '%1$s (%2$s) by %3$s, %4$s. %5$s',
+	$caption       = sprintf(
+		'%1$s (%2$s) by %3$s, %4$s. %5$s',
 		$info['file']['title'],
 		$info['file']['date'],
 		$info['file']['author'],
@@ -75,10 +96,11 @@ function embed_wikimedia_commons( $matches, $attr, $url, $rawattr ) {
 /**
  * Get the JSON data from an API call, caching for an hour if we're not in debug mode.
  *
- * @param $url
+ * @param string $url The URL to fetch.
+ * @param string $response_format Either 'json' or 'xml'.
  *
  * @return mixed
- * @throws Exception
+ * @throws Exception If no data could be retrieved.
  */
 function embed_wikimedia_get_data( $url, $response_format = 'json' ) {
 	$transient_name = 'embed_wikimedia_url_' . md5( $url );
@@ -92,8 +114,8 @@ function embed_wikimedia_get_data( $url, $response_format = 'json' ) {
 		$msg = __( 'Unable to retrieve URL: %s', 'embed-wikimedia' );
 		throw new Exception( sprintf( $msg, $url ) );
 	}
-	$info = ( $response_format === 'xml' )
-		? json_decode( json_encode( new SimpleXMLElement( $response['body'] ) ), true )
+	$info = ( 'xml' === $response_format )
+		? json_decode( wp_json_encode( new SimpleXMLElement( $response['body'] ) ), true )
 		: json_decode( $response['body'], true );
 	set_transient( $transient_name, $info, 60 * 60 );
 	return $info;
