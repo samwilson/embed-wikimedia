@@ -3,11 +3,11 @@ Contributors: samwilson
 Donate link: https://donate.wikimedia.org/
 Tags: wikimedia, wikipedia, commons, photos, embed, embeds
 Requires at least: 4.7
-Tested up to: 4.9
+Tested up to: 5.2
 Requires PHP: 5.6
-Stable tag: 0.1.0
+Stable tag: trunk
 License: GPLv2 or later
-License URI: http://www.gnu.org/licenses/gpl-2.0.html
+License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 The **Embed Wikimedia** plugin adds support for embedding photos from Wikimedia projects such as Wikipedia.
 
