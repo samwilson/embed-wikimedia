@@ -26,6 +26,7 @@ if ( ! defined( 'WPINC' ) ) {
 
 wp_embed_register_handler( 'wikipedia', '|https?://([a-z]+\.wikipedia\.org)/wiki/(.*)|i', 'embed_wikimedia_wikipedia' );
 wp_embed_register_handler( 'wikimedia_commons', '|https?://commons\.wikimedia\.org/wiki/(.*)|i', 'embed_wikimedia_commons' );
+wp_embed_register_handler( 'wikidata', '|https?://(www\.)?wikidata\.org/wiki/(.*)|i', 'embed_wikimedia_wikidata' );
 
 /**
  * Embed handler for Wikipedia URLs.
@@ -91,6 +92,64 @@ function embed_wikimedia_commons( $matches, $attr, $url, $rawattr ) {
 		'align'   => 'aligncenter',
 	];
 	return img_caption_shortcode( $caption_attrs, $img_link );
+}
+
+/**
+ * Embed handler for Wikidata URLs.
+ *
+ * @param string[] $matches Regex matches from the handler definition.
+ * @param array    $attr Desired attributes of the returned image (can be ignored).
+ * @param string   $url The requested URL.
+ * @param string[] $rawattr The same as $attr but without argument parsing.
+ *
+ * @return string The HTML to embed.
+ */
+function embed_wikimedia_wikidata( $matches, $attr, $url, $rawattr ) {
+	$item_id = $matches[2];
+	$api_url = sprintf( 'https://www.wikidata.org/entity/%s', $item_id );
+	$info    = embed_wikimedia_get_data( $api_url );
+	$info    = $info['entities'][ $item_id ];
+
+	// Label and description.
+	$basic_info = embed_wikimedia_wikidata_basic_info( $info );
+	$legend     = sprintf(
+		'<strong><a href="%1$s"><img src="%2$s" alt="%3$s" /> %4$s</a>:</strong> %5$s',
+		$url,
+		plugin_dir_url( '' ) . 'embed-wikimedia/img/wikidata.png',
+		__( 'Wikidata logo', 'embed-wikimedia' ),
+		$basic_info['label'],
+		$basic_info['description']
+	);
+
+	// Put it all together.
+	$out = '<blockquote class="embed-wikimedia wikidata">' . $legend . '</blockquote>';
+	return $out;
+}
+
+/**
+ * Get the label and description of the given Wikidata item.
+ *
+ * @param array $info Info as returned by the API.
+ * @return string[] With keys 'label' and 'description'.
+ */
+function embed_wikimedia_wikidata_basic_info( $info ) {
+	$lang  = defined( 'WPLANG' ) ? WPLANG : 'en';
+	$label = '';
+	if ( isset( $info['labels'][ $lang ]['value'] ) ) {
+		$label = $info['labels'][ $lang ]['value'];
+	} elseif ( isset( $info['labels']['en']['value'] ) ) {
+		$label = $info['labels']['en']['value'];
+	}
+	$description = '';
+	if ( isset( $info['descriptions'][ $lang ]['value'] ) ) {
+		$description = $info['descriptions'][ $lang ]['value'];
+	} elseif ( isset( $info['descriptions']['en']['value'] ) ) {
+		$description = $info['descriptions']['en']['value'];
+	}
+	return [
+		'label'       => $label,
+		'description' => $description,
+	];
 }
 
 /**
