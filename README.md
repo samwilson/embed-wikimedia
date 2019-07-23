@@ -12,7 +12,7 @@ License URI: https://www.gnu.org/licenses/gpl-2.0.html
 The **Embed Wikimedia** plugin adds support for embedding photos from Wikimedia projects such as Wikipedia.
 
 [![Total Downloads](https://img.shields.io/wordpress/plugin/dt/embed-wikimedia.svg?style=flat-square)]()
-[![WordPress rating](https://img.shields.io/wordpress/plugin/r/embed-wikimedia.svg?style=flat-square)]()
+[![WordPress rating](https://img.shields.io/wordpress/plugin/r/embed-wikimedia.svg?style=flat-square)](https://wordpress.org/support/plugin/embed-wikimedia/reviews/)
 [![Latest Stable Version](https://img.shields.io/wordpress/plugin/v/embed-wikimedia.svg?style=flat-square)](https://wordpress.org/plugins/embed-wikimedia)
 [![WordPress version](https://img.shields.io/wordpress/v/embed-wikimedia.svg?style=flat-square)]()
 [![License](https://img.shields.io/github/license/samwilson/embed-wikimedia.svg?style=flat-square)](https://github.com/samwilson/embed-wikimedia/blob/master/LICENSE.txt)
