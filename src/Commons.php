@@ -48,15 +48,17 @@ class Commons extends WikimediaProject {
 		}
 		$url           = 'https://commons.wikimedia.org/wiki/File:' . $title;
 		$img_link      = sprintf( $link_format, $url, $info['file']['urls']['thumbnail'], $info['file']['name'] );
+		$date          = isset( $info['file']['date'] ) ? $info['file']['date'] : '';
+		$author        = isset( $info['file']['author'] ) ? $info['file']['author'] : '';
 		$license       = isset( $info['licenses']['license'][0] ) ? $info['licenses']['license'][0] : $info['licenses']['license'];
-		$date          = is_string( $info['file']['date'] ) ? $info['file']['date'] : '';
+		$description   = isset( $info['description']['language'] ) ? $info['description']['language'] : '';
 		$caption       = sprintf(
 			'%1$s (%2$s) by %3$s, %4$s. %5$s',
 			$info['file']['title'],
 			$date,
-			$info['file']['author'],
+			$author,
 			$license['name'],
-			$info['description']['language']
+			$description
 		);
 		$caption_attrs = [
 			'caption' => $caption,
