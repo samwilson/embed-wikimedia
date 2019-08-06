@@ -8,6 +8,8 @@
 
 namespace Samwilson\EmbedWikimedia;
 
+use Exception;
+
 /**
  * Provide data and HTML for the Wikipedia embed.
  *
@@ -35,9 +37,18 @@ class Wikipedia extends WikimediaProject {
 	public function html( $title, $attrs = [] ) {
 		$base_url = sprintf( 'https://%s.wikipedia.org', $attrs['lang'] );
 		$rest_url = sprintf( '%s/api/rest_v1/page/summary/%s', $base_url, $title );
-		$info     = $this->get_data( $rest_url );
-		$img      = '';
-		$url      = $info['content_urls']['desktop']['page'];
+		try {
+			$info = $this->get_data( $rest_url );
+		} catch ( Exception $exception ) {
+			$error_info = json_decode( $exception->getMessage(), true );
+			$err        = isset( $error_info['detail'] ) ? $error_info['detail'] : __( 'An error occurred.' );
+			return '<p class="error">' . $err . '</p>';
+		}
+		if ( isset( $info['error'] ) ) {
+			return '<p class="error">' . $info['error'] . '</p>';
+		}
+		$img = '';
+		$url = $info['content_urls']['desktop']['page'];
 		if ( isset( $info['thumbnail'] ) ) {
 			$img = sprintf(
 				'<a href="%1$s"><img src="%2$s" alt="%3$s" width="%4$s" height="%5$s" /></a>',

@@ -7,6 +7,17 @@
 
 ( function( blocks, element, i18n, api ) {
 
+	var fetchEmbedHtml = function ( apiUrl, props ) {
+		window.wp.apiFetch( {path: apiUrl} ).then(
+			function (response) {
+				if (response.error !== undefined) {
+					return;
+				}
+				props.setAttributes( { embed_html: response.embed_html } );
+			}
+		)
+	};
+
 	/**
 	 * 1 of 3: Commons.
 	 */
@@ -30,27 +41,30 @@
 		}
 	);
 	function editCommons( props ) {
-		var embed_html    = element.createElement( element.RawHTML, {}, props.attributes.embed_html );
-		var filenameInput = element.createElement(
+		var filename_input       = element.createElement(
 			wp.components.TextControl,
 			{
 				label: i18n.__( 'Wikimedia Commons file name:' ),
 				value: props.attributes.filename,
 				onChange: function ( newFilename ) {
-					props.setAttributes( { filename: newFilename.trim() } );
-					var apiUrl = '/embed-wikimedia/v1/commons/' + encodeURI( newFilename ) + '?width=700';
-					window.wp.apiFetch( { path: apiUrl } ).then(
-						function ( response ) {
-							if ( response.error !== undefined ) {
-								return;
-							}
-							props.setAttributes( { embed_html: response.embed_html } );
-						}
-					);
+					props.setAttributes( {filename: newFilename.trim(), embed_html: ''} );
 				}
 			}
 		);
-		return element.createElement( "div", {}, filenameInput, embed_html );
+		var embed_preview_button = element.createElement(
+			wp.components.Button,
+			{
+				isDefault: true,
+				onClick: function () {
+					props.setAttributes( { embed_html: i18n.__( 'Loading...' ) } );
+					var apiUrl = '/embed-wikimedia/v1/commons/' + encodeURI( props.attributes.filename ) + '?width=700';
+					fetchEmbedHtml( apiUrl, props );
+				}
+			},
+			i18n.__( 'Preview' )
+		);
+		var embed_html           = element.createElement( element.RawHTML, {}, props.attributes.embed_html );
+		return element.createElement( "div", {}, filename_input, embed_preview_button, embed_html );
 	}
 
 	/**
@@ -77,41 +91,40 @@
 		}
 	);
 	function editWikipedia( props ) {
-		var embed_html      = element.createElement( element.RawHTML, {}, props.attributes.embed_html );
-		var updateWikipedia = function ( props ) {
-			var apiUrl = '/embed-wikimedia/v1/wikipedia/' + props.attributes.wiki_title + '?lang=' + props.attributes.wiki_lang;
-			window.wp.apiFetch( { path: apiUrl } ).then(
-				function ( response ) {
-					if ( response.error !== undefined ) {
-						return;
-					}
-					props.setAttributes( { embed_html: response.embed_html } );
+		var embed_preview_button = element.createElement(
+			wp.components.Button,
+			{
+				isDefault: true,
+				onClick: function () {
+					props.setAttributes( { embed_html: i18n.__( 'Loading...' ) } );
+					var apiUrl = '/embed-wikimedia/v1/wikipedia/' + props.attributes.wiki_title + '?lang=' + props.attributes.wiki_lang;
+					fetchEmbedHtml( apiUrl, props );
 				}
-			);
-		};
-		var wikiLangInput   = element.createElement(
+			},
+			i18n.__( 'Preview' )
+		);
+		var wiki_lang_input      = element.createElement(
 			wp.components.TextControl,
 			{
 				label: i18n.__( 'Wikipedia language code:' ),
 				value: props.attributes.wiki_lang,
 				onChange: function ( newLang ) {
-					props.setAttributes( { wiki_lang: newLang.trim() } );
-					updateWikipedia( props );
+					props.setAttributes( { embed_html: '', wiki_lang: newLang.trim() } );
 				}
 			}
 		);
-		var wikiTitleInput  = element.createElement(
+		var wiki_title_input     = element.createElement(
 			wp.components.TextControl,
 			{
 				label: i18n.__( 'Article title:' ),
 				value: props.attributes.wiki_title,
 				onChange: function ( newTitle ) {
-					props.setAttributes( { wiki_title: newTitle.trim() } );
-					updateWikipedia( props );
+					props.setAttributes( { embed_html: '', wiki_title: newTitle.trim() } );
 				}
 			}
 		);
-		return element.createElement( 'div', {}, wikiLangInput, wikiTitleInput, embed_html );
+		var embed_html           = element.createElement( element.RawHTML, {}, props.attributes.embed_html );
+		return element.createElement( 'div', {}, wiki_lang_input, wiki_title_input, embed_preview_button, embed_html );
 	}
 
 	/**
@@ -137,27 +150,30 @@
 		}
 	);
 	function editWikidata( props ) {
-		var embed_html    = element.createElement( element.RawHTML, {}, props.attributes.embed_html );
-		var filenameInput = element.createElement(
+		var embed_html           = element.createElement( element.RawHTML, {}, props.attributes.embed_html );
+		var item_id_input        = element.createElement(
 			wp.components.TextControl,
 			{
 				label: i18n.__( 'Wikidata item ID:' ),
 				value: props.attributes.wikidata_item,
 				onChange: function ( newItemId ) {
-					props.setAttributes( { wikidata_item: newItemId.trim() } );
-					var apiUrl = '/embed-wikimedia/v1/wikidata/' + newItemId;
-					window.wp.apiFetch( { path: apiUrl } ).then(
-						function ( response ) {
-							if ( response.error !== undefined ) {
-								return;
-							}
-							props.setAttributes( { embed_html: response.embed_html } );
-						}
-					);
+					props.setAttributes( { embed_html: '', wikidata_item: newItemId.trim() } );
 				}
 			}
 		);
-		return element.createElement( "div", {}, filenameInput, embed_html );
+		var embed_preview_button = element.createElement(
+			wp.components.Button,
+			{
+				isDefault: true,
+				onClick: function () {
+					props.setAttributes( { embed_html: i18n.__( 'Loading...' ) } );
+					var apiUrl = '/embed-wikimedia/v1/wikidata/' + encodeURI( props.attributes.wikidata_item );
+					fetchEmbedHtml( apiUrl, props );
+				}
+			},
+			i18n.__( 'Preview' )
+		);
+		return element.createElement( "div", {}, item_id_input, embed_preview_button, embed_html );
 	}
 
 }( window.wp.blocks, window.wp.element, window.wp.i18n, window.wp.api ) );

@@ -11,6 +11,7 @@ namespace Samwilson\EmbedWikimedia;
 use Exception;
 use SimpleXMLElement;
 use WP_Error;
+use WP_HTTP_Requests_Response;
 
 /**
  * Parent class for all individual projects.
@@ -68,6 +69,11 @@ abstract class WikimediaProject {
 			// translators: error message displayed when no response could be got from an API call.
 			$msg = __( 'Unable to retrieve URL: %s', 'embed-wikimedia' );
 			throw new Exception( sprintf( $msg, $url ) );
+		}
+		if ( $response['http_response'] instanceof WP_HTTP_Requests_Response
+			&& $response['http_response']->get_status() >= 400
+		) {
+			throw new Exception( $response['body'], $response['http_response']->get_status() );
 		}
 		$info = ( 'xml' === $response_format )
 			? json_decode( wp_json_encode( new SimpleXMLElement( $response['body'] ) ), true )
