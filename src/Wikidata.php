@@ -8,6 +8,9 @@
 
 namespace Samwilson\EmbedWikimedia;
 
+use DOMDocument;
+use Exception;
+
 /**
  * Provide data and HTML for the Wikidata embed.
  *
@@ -36,9 +39,17 @@ class Wikidata extends WikimediaProject {
 		if ( substr( $title, 0, 1 ) !== 'Q' ) {
 			$title = "Q$title";
 		}
-		$api_url = sprintf( 'https://www.wikidata.org/entity/%s', $title );
-		$info    = $this->get_data( $api_url );
-		$info    = $info['entities'][ $title ];
+		$api_url = sprintf( 'https://www.wikidata.org/wiki/Special:EntityData/%s.json', $title );
+		try {
+			$info = $this->get_data( $api_url );
+		} catch ( Exception $exception ) {
+			// Wikidata returns errors as HTML rather than JSON.
+			$err_doc = new DOMDocument();
+			$err_doc->loadHTML( $exception->getMessage() );
+			$error = $err_doc->getElementsByTagName( 'p' )->item( 0 )->textContent;
+			return '<p class="error">' . $error . '</p>';
+		}
+		$info = $info['entities'][ $title ];
 
 		// Label and description.
 		$basic_info = $this->extract_basic_info( $info );
