@@ -57,7 +57,7 @@
 				isDefault: true,
 				onClick: function () {
 					props.setAttributes( { embed_html: i18n.__( 'Loading...' ) } );
-					var apiUrl = '/embed-wikimedia/v1/commons/' + encodeURI( props.attributes.filename ) + '?width=700';
+					var apiUrl = '/embed-wikimedia/v1/commons/File:' + encodeURI( props.attributes.filename ) + '?width=700';
 					fetchEmbedHtml( apiUrl, props );
 				}
 			},
