@@ -24,6 +24,9 @@ The **Embed Wikimedia** plugin adds support for embedding photos from Wikimedia 
 
 It requires no configuration, and to use you just add a URL of any of the above sites on its own line in a WordPress post or page.
 
+Development is on Github at [samwilson/embed-wikimedia](https://github.com/samwilson/embed-wikimedia);
+please report all issues there.
+
 == Installation ==
 
 Install in the usual way.
