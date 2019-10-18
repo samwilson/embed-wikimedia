@@ -10,9 +10,9 @@ php:
 # Include the highest patch versions of the last 3 versions (including the current one), as well as master.
 # When updating this, also update the "Requires at least" and "Tested up to" in README.md.
 env:
-    - WP_VERSION=4.7.11
-    - WP_VERSION=4.8.7
-    - WP_VERSION=4.9.8
+    - WP_VERSION=5.0.1
+    - WP_VERSION=5.1.1
+    - WP_VERSION=5.2.2
     - WP_VERSION=master
 
 # Configure our testing environment.
