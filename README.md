@@ -2,7 +2,7 @@
 Contributors: samwilson
 Donate link: https://donate.wikimedia.org/
 Tags: wikimedia, wikipedia, commons, photos, embed, embeds
-Requires at least: 4.7
+Requires at least: 5.0
 Tested up to: 5.2
 Requires PHP: 5.6
 Stable tag: trunk
@@ -31,6 +31,9 @@ Install in the usual way.
 == Frequently Asked Questions ==
 
 == Changelog ==
+
+= 0.2.0 =
+* Add block-editor support.
 
 = 0.1.0 =
 * Initial beta release.
