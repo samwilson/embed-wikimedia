@@ -15,7 +15,7 @@
 	},
 	"require": {
 		"ext-simplexml": "*",
-		"composer/installers": "v1.0.6"
+		"composer/installers": "v1.9.0"
 	},
 	"require-dev": {
 		"wp-coding-standards/wpcs": "^2.1"
