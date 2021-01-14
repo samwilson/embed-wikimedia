@@ -4,39 +4,47 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "78e7df3518a59bb0b6bc4251e816ca0f",
+    "content-hash": "ddeb13c769a1a09567e48fddc69d0318",
     "packages": [
         {
             "name": "composer/installers",
-            "version": "v1.0.6",
+            "version": "v1.10.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/installers.git",
-                "reference": "b3bd071ea114a57212c75aa6a2eef5cfe0cc798f"
+                "reference": "1a0357fccad9d1cc1ea0c9a05b8847fbccccb78d"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/composer/installers/zipball/b3bd071ea114a57212c75aa6a2eef5cfe0cc798f",
-                "reference": "b3bd071ea114a57212c75aa6a2eef5cfe0cc798f",
+                "url": "https://api.github.com/repos/composer/installers/zipball/1a0357fccad9d1cc1ea0c9a05b8847fbccccb78d",
+                "reference": "1a0357fccad9d1cc1ea0c9a05b8847fbccccb78d",
                 "shasum": ""
             },
+            "require": {
+                "composer-plugin-api": "^1.0 || ^2.0"
+            },
             "replace": {
+                "roundcube/plugin-installer": "*",
                 "shama/baton": "*"
             },
             "require-dev": {
-                "composer/composer": "1.0.*@dev",
-                "phpunit/phpunit": "3.7.*"
+                "composer/composer": "1.6.* || ^2.0",
+                "composer/semver": "^1 || ^3",
+                "phpstan/phpstan": "^0.12.55",
+                "phpstan/phpstan-phpunit": "^0.12.16",
+                "symfony/phpunit-bridge": "^4.2 || ^5",
+                "symfony/process": "^2.3"
             },
-            "type": "composer-installer",
+            "type": "composer-plugin",
             "extra": {
-                "class": "Composer\\Installers\\Installer",
+                "class": "Composer\\Installers\\Plugin",
                 "branch-alias": {
-                    "dev-master": "1.0-dev"
+                    "dev-main": "1.x-dev"
                 }
             },
             "autoload": {
-                "psr-0": {
-                    "Composer\\Installers\\": "src/"
+                "psr-4": {
+                    "Composer\\Installers\\": "src/Composer/Installers"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -47,37 +55,100 @@
                 {
                     "name": "Kyle Robinson Young",
                     "email": "kyle@dontkry.com",
-                    "homepage": "https://github.com/shama",
-                    "role": "Developer"
+                    "homepage": "https://github.com/shama"
                 }
             ],
             "description": "A multi-framework Composer library installer",
-            "homepage": "http://composer.github.com/installers/",
+            "homepage": "https://composer.github.io/installers/",
             "keywords": [
-                "TYPO3 CMS",
-                "TYPO3 Flow",
-                "TYPO3 Neos",
+                "Craft",
+                "Dolibarr",
+                "Eliasis",
+                "Hurad",
+                "ImageCMS",
+                "Kanboard",
+                "Lan Management System",
+                "MODX Evo",
+                "MantisBT",
+                "Mautic",
+                "Maya",
+                "OXID",
+                "Plentymarkets",
+                "Porto",
+                "RadPHP",
+                "SMF",
+                "Starbug",
+                "Thelia",
+                "Whmcs",
+                "WolfCMS",
                 "agl",
+                "aimeos",
+                "annotatecms",
+                "attogram",
+                "bitrix",
                 "cakephp",
+                "chef",
+                "cockpit",
                 "codeigniter",
+                "concrete5",
+                "croogo",
+                "dokuwiki",
                 "drupal",
+                "eZ Platform",
+                "elgg",
+                "expressionengine",
                 "fuelphp",
+                "grav",
                 "installer",
+                "itop",
                 "joomla",
+                "known",
                 "kohana",
                 "laravel",
-                "li3",
+                "lavalite",
                 "lithium",
+                "magento",
+                "majima",
                 "mako",
+                "mediawiki",
                 "modulework",
+                "modx",
+                "moodle",
+                "osclass",
                 "phpbb",
+                "piwik",
                 "ppi",
+                "processwire",
+                "puppet",
+                "pxcms",
+                "reindex",
+                "roundcube",
+                "shopware",
                 "silverstripe",
+                "sydes",
+                "sylius",
                 "symfony",
+                "typo3",
                 "wordpress",
-                "zend"
+                "yawik",
+                "zend",
+                "zikula"
             ],
-            "time": "2013-08-20T04:37:09+00:00"
+            "funding": [
+                {
+                    "url": "https://packagist.com",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/composer",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/composer/composer",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-01-14T11:07:16+00:00"
         }
     ],
     "packages-dev": [
@@ -189,5 +260,6 @@
     "platform-dev": [],
     "platform-overrides": {
         "php": "5.6"
-    }
+    },
+    "plugin-api-version": "1.1.0"
 }
